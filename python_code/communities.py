@@ -92,4 +92,4 @@ def cut_nodes_degree(G, deg_min, deg_max, path=""):
 # Exemple avec AES128 10 tours
 
 graph128 = init_polynomials(10, 4, 4, 8)
-cut_nodes_degree(graph128, 30, 35, "aes128_10tours_200cp_removed.gexf")
+cut_nodes_degree(graph128, 100, 315, "aes128_10tours_200cp_removed.gexf")
