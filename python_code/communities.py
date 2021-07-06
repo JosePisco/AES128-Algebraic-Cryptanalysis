@@ -5,6 +5,8 @@ import community as community_louvain
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
+import nxmetis
+
 # $pip install community
 # $pip install python-louvain
 # --------------------------------------------
@@ -77,6 +79,17 @@ def cut_nodes_degree(G, deg_min, deg_max, path=""):
         nx.write_gexf(N, path)
         print("graph file saved")
 
+# remove tous les sommets d'un graphe à partir d'une liste
+# la liste est généralement celle obtenue après une séparation utilsiant nxmetis
+# pour visualiser le graphe après séparation (pour voir le comportement de nxmetis)
+def remove_nodes_with_list(G, nodes, path=""):
+    N = G.networkx_graph()
+    for node in nodes:
+        N.remove_node(node)
+
+    if path != "":
+        nx.write_gexf(N, path)
+        print("graph file saved")
 
 # exemple avec AES-4
 # graph4 = init_polynomials(10, 1, 1, 4)
@@ -91,5 +104,11 @@ def cut_nodes_degree(G, deg_min, deg_max, path=""):
 
 # Exemple avec AES128 10 tours
 
-graph128 = init_polynomials(10, 4, 4, 8)
-cut_nodes_degree(graph128, 100, 315, "aes128_10tours_200cp_removed.gexf")
+# graph128 = init_polynomials(10, 4, 4, 8)
+# cut_nodes_degree(graph128, 100, 315, "aes128_10tours_200cp_removed.gexf")
+
+# 
+G = init_polynomials(1, 4, 4, 8)
+print("Spliting the graph...")
+split = nxmetis.vertex_separator(G.networkx_graph())
+remove_nodes_with_list(G, split[0], "test.gexf")
