@@ -1,5 +1,6 @@
 from sage.all import mq
 import networkx as nx
+import networkx.algorithms.approximation.treewidth as tw
 import osmnx as ox
 import community as community_louvain
 import matplotlib.cm as cm
@@ -16,13 +17,21 @@ import nxmetis
 # réduire les colonnes / lignes de mq.SR simplifie énormément le graphe
 # pour aes-64, le graphe donné par les paramètres (n, 2, 4, 8) est beaucoup plus petit
 # que celui donné par (n, 4, 4, 4)
-
+# --------------------------------------------
+# fonction pour créer un graphe à partir de mq SR
+# n le nombre de tours (1::10)
+# r, c le nombre de lignes et colonnes (2, 4, 8)
+# e le degré du corps d'extension fini (4, 8)
+#
+# retourne un sagemath graphe
 def init_polynomials(n, r, c, e):
     sr = mq.SR(n, r, c, e, gf2=True, polybori=True, allow_zero_inversions=True)
     f, s = sr.polynomial_system()
     G = f.connection_graph()
     return G
 
+# permet d'afficher un graphe avec mathplotlib
+# G un sagemath graphe
 def plot_graph(G):
     N = G.networkx_graph() # N is undirected by default
     partition = community_louvain.best_partition(N)
@@ -40,6 +49,8 @@ def plot_graph(G):
 
     plt.show()
 
+# permet d'afficher un graphe chargé à partir d'un fichier de graphe (gexf, gml...)
+# G un networkx graphe
 def plot_gephi(G):
     partition = community_louvain.best_partition(G)
 
@@ -79,9 +90,11 @@ def cut_nodes_degree(G, deg_min, deg_max, path=""):
         nx.write_gexf(N, path)
         print("graph file saved")
 
-# remove tous les sommets d'un graphe à partir d'une liste
+# remove tous les sommets d'un graphe à partir d'une liste
 # la liste est généralement celle obtenue après une séparation utilsiant nxmetis
 # pour visualiser le graphe après séparation (pour voir le comportement de nxmetis)
+# spécifier un chemin pour savegarder en fichier gexf
+# G un sagemath graphe
 def remove_nodes_with_list(G, nodes, path=""):
     N = G.networkx_graph()
     for node in nodes:
@@ -107,8 +120,15 @@ def remove_nodes_with_list(G, nodes, path=""):
 # graph128 = init_polynomials(10, 4, 4, 8)
 # cut_nodes_degree(graph128, 100, 315, "aes128_10tours_200cp_removed.gexf")
 
-# 
+# Création de graphe puis recherche de vecteurs de séparation avec nxmetis
+# Séparation moyenne pour aes-128 -> 147 noeuds
 G = init_polynomials(1, 4, 4, 8)
 print("Spliting the graph...")
-split = nxmetis.vertex_separator(G.networkx_graph())
-remove_nodes_with_list(G, split[0], "test.gexf")
+# split = nxmetis.vertex_separator(G.networkx_graph())
+# remove_nodes_with_list(G, split[0], "")
+
+Treewidth = tw.treewidth_min_degree(G.networkx_graph())
+mfi = tw.treewidth_min_fill_in(G.networkx_graph())
+
+nx.write_gexf(Treewidth[1], "tw.gexf")
+nx.write_gexf(mfi[1], "mfi.gexf")
