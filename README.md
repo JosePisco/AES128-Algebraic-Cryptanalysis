@@ -14,5 +14,5 @@ There is a PDF report of my work (in french) summing up everything i did.
 ## Code
 See `/python` and `/notebooks`
 
-## Graph work
+## Graph work
 graph files of interesting results are in `/graph_files` and my GEPHI project is available as a project file `graph_files/graphs.gephi`
