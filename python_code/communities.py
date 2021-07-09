@@ -116,16 +116,15 @@ def remove_nodes_with_list(G, nodes, path=""):
 
 
 # Exemple avec AES128 10 tours
-
 # graph128 = init_polynomials(10, 4, 4, 8)
-# cut_nodes_degree(graph128, 100, 315, "aes128_10tours_200cp_removed.gexf")
+# cut_nodes_degree(graph128, 30, 35, "aes128_10tours_cp_removed.gexf")
 
 # Création de graphe puis recherche de vecteurs de séparation avec nxmetis
 # Séparation moyenne pour aes-128 -> 147 noeuds
 G = init_polynomials(1, 4, 4, 8)
 print("Spliting the graph...")
-# split = nxmetis.vertex_separator(G.networkx_graph())
-# remove_nodes_with_list(G, split[0], "")
+split = nxmetis.vertex_separator(G.networkx_graph())
+remove_nodes_with_list(G, split[0], "graph_modified.gexf")
 
 Treewidth = tw.treewidth_min_degree(G.networkx_graph())
 mfi = tw.treewidth_min_fill_in(G.networkx_graph())
